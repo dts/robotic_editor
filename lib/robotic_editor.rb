@@ -1,5 +1,5 @@
-require "robotic_editor/version"
+require 'robotic_editor/robotically_edits'
+require 'robotic_editor/version'
 
-module RoboticEditor
-  # Your code goes here...
-end
+RoboticEditor::RoboticallyEdits::Adapter.load_available
+
