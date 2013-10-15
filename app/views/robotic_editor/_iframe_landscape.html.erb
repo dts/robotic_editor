@@ -1,0 +1,17 @@
+<% id = "cmif#{index}" %>
+<div class="content_image_container landscape <%= (index % 2==0) ? 'even' : 'odd'  %>">
+<div class="content_image" id="<%= id %>">
+<style type="text/css">
+  <% # hide the image, showing the background images %>
+  @media (min-width: 1px) {
+    div#<%= id %> { 
+      width: 100%; 
+      padding-bottom: <%= 100.to_f/woverh %>%;
+    }
+  }
+</style>
+<div>
+<%= content %>
+</div>
+</div>
+</div>
