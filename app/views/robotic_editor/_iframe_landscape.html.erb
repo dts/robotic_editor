@@ -11,7 +11,10 @@
   }
 </style>
 <div>
-<%= content %>
+<% content.set_attribute(:width,"100%") %>
+<% content.set_attribute(:height,"100%") %>
+
+<%= content.to_s.html_safe %>
 </div>
 </div>
 </div>

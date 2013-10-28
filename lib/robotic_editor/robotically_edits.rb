@@ -44,7 +44,8 @@ module RoboticEditor
       src = img.attr(:src)
 
       id = /.*\/(.*?)\/.*?$/.match(src)[1] rescue nil
-      picture = RedactorRails::Picture.find(id)
+      picture = RedactorRails::Picture.find(id) rescue nil
+      return unless picture
 
       woverh = picture.width.to_f / picture.height.to_f
       if woverh > 1.2
@@ -73,7 +74,7 @@ module RoboticEditor
         partial = "robotic_editor/iframe_landscape" # could be made "square" in future
       end
 
-      iframe.replace(render_partial(partial,{ :content => iframe.to_s , :woverh => woverh , :index => index }))
+      iframe.replace(render_partial(partial,{ :content => iframe , :woverh => woverh , :index => index }))
     end
 
     def self.render_partial(partial , locals)
@@ -95,10 +96,27 @@ module RoboticEditor
       doc.children[1].children[0].children.to_s
     end
 
+    def self.summarize the_content, max_length
+      doc = Nokogiri::HTML(the_content)
+      
+      text = doc.text().gsub(/\s+/,' ').lstrip
+      
+      text[0..max_length] + ( text.length < max_length ? "...":"")
+    end
+
     module RoboticallyEditsClassMethods
+      def robotically_summarizes(attribute , options = {})
+        class_eval do
+          define_method options[:as] || attribute+"_"+summary do
+            return nil unless self[attribute].presence
+            RoboticEditor::RoboticallyEdits::summarize(self[attribute],options[:max_length] || 300)
+          end
+        end
+      end
       def robotically_edits(attribute , options = {})
         class_eval do
-          define_method attribute do
+          define_method options[:as] || attribute do
+            return nil unless self[attribute].presence
             RoboticEditor::RoboticallyEdits::edit_robotically(self[attribute])
           end
         end
